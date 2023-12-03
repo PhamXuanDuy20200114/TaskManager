@@ -29,7 +29,6 @@ let userInfo = async (req, res) => {
 }
 
 let createNewUser = async (req, res) => {
-
     let { userName, email, password, phone } = req.body;
     if (!userName || !email || !password || !phone) {
         return res.status(400).json({
@@ -49,6 +48,7 @@ let createNewUser = async (req, res) => {
 
     [result, field2] = await connection.query(`INSERT INTO users (name, email, password, phone)
     VALUES (?,?,?,?)`, [userName, email, hashPassword, phone])
+
     return res.status(200).json({
         message: "Register successful!!!"
     })
@@ -72,14 +72,13 @@ let login = async (req, res) => {
             message: "User is not exist!!!"
         })
     }
-
     const user = existUser[0];
     const checkPassword = await comparePasswords(password, user.password);
     if (checkPassword) {
         const token = jwt.sign({ userId: user.user_id }, process.env.SECRET_KEY);
+        console.log(token);
         return res.header('Authorization', `Bearer ${token}`).json({ message: "Login successful!!!" });
     }
-
     return res.status(400).json({
         message: "Password is incorrect!!!"
     })

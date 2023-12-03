@@ -17,16 +17,6 @@ app.use(bodyParser.json())
 app.use('/api/user', userRoutes);
 app.use('/api/task', taskRoutes);
 
-//test Connection
-// simple query
-// connection.query(
-//     'select *from users u',
-//     function (err, results, fields) {
-//         console.log('>>>results= ', results); // results contains rows returned by server
-//         // console.log('>>>fields= ', fields); // fields contains extra meta data about results, if available
-//     }
-// );
-
 app.listen(port, hostname, () => {
     console.log(`Example app listening on port ${port}`)
 })

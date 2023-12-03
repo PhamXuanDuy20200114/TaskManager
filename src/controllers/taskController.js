@@ -5,27 +5,13 @@ const jwt = require('jsonwebtoken');
 const {
     getTaskByID,
     getAllTaskByUserID,
-    // updateTasks,
-    addTask,
-    // deleteTasks 
+    //addTask
 } = require('../services/taskService');
 
 
 
 let getTaskList = async (req, res) => {
-    const token = req.header('Authorization').split(' ')[1];
-    console.log(token);
-    let user_id;
-    await jwt.verify(token, process.env.SECRET_KEY, (resolve, reject) => {
-        if (reject) {
-            return res.status(400).json({
-                message: "Token khong hop le"
-            })
-        }
-        user_id = resolve;
-        console.log(resolve)
-    })
-    console.log(user_id)
+    let user_id = req.decoded.userId;
     let listTask = await getAllTaskByUserID(user_id);
     return res.status(200).json({
         message: 'ok',
@@ -41,31 +27,55 @@ let getTask_ID = async (req, res) => {
     })
 }
 
-// const updateTasks = (req, res) => {
-//     res.render('sample.ejs')
-// }
+const updateTasks = async (req, res) => {
+    let { task_id, Name, Description, StartTime, EndTime, status } = req.body;
+    if (!task_id || !Name || !StartTime || !EndTime || !status) {
+        return res.status(500).json({
+            message: "Not OK"
+        })
+    }
+    await connection.query(`UPDATE tasks SET Name = ?, Description= ?, StartTime = ?, EndTime = ?, status = ? WHERE task_id = ?`,
+        [Name, Description, StartTime, EndTime, status, task_id]);
+    return res.status(200).json({
+        message: 'OK'
+    })
+}
+
 const createTask = async (req, res) => {
+    let user_id = req.decoded.userId;
+    console.log(req.decoded)
     let { Name, Description, StartTime, EndTime, status } = req.body;
     if (!Name || !StartTime || !EndTime || !status) {
         return res.status(500).json({
             message: "Not OK"
         })
     }
-    await connection.query(`INSERT INTO tasks (Name, Description, StartTime, EndTime, status) 
+    let [task, fields] = await connection.query(`INSERT INTO tasks (Name, Description, StartTime, EndTime, status) 
         VALUES (?,?,?,?,?)`, [Name, Description, StartTime, EndTime, status]);
+    await connection.query(`INSERT INTO user_tasks (user_id, task_id) VALUES (?,?)`, [user_id, task.insertId]);
     return res.status(200).json({
         message: "OK"
     })
 }
 
-// const deleteTasks = (req, res) => {
-//     res.render('sample.ejs')
-// }
+const deleteTask = async (req, res) => {
+    let task_id = req.query.task_id;
+    if (!task_id) {
+        return res.status(400).json({
+            message: "Not Ok"
+        })
+    }
+    await connection.query(`DELETE FROM user_tasks WHERE task_id = ?`, [task_id]);
+    await connection.query(`DELETE FROM tasks WHERE task_id = ?`, [task_id])
+    return res.status(200).json({
+        message: "OK"
+    })
+}
 
 module.exports = {
     getTask_ID,
     getTaskList,
-    // updateTasks,
+    updateTasks,
     createTask,
-    // deleteTasks,
+    deleteTask
 }

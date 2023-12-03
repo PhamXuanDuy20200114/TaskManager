@@ -2,20 +2,20 @@ const express = require('express');
 const {
     getTask_ID,
     getTaskList,
-    // updateTasks,
+    updateTasks,
     createTask,
-    // deleteTasks
+    deleteTask
 } = require('../controllers/taskController');
+const { verifyToken } = require('../middleware/tokenMiddleware')
 const router = express.Router();
-
 
 //route.Method('/route', handler)
 
-router.get('/', getTaskList);
+router.get('/', verifyToken, getTaskList);
 router.get('/detail/:task_id', getTask_ID);
-router.post('/create-task', createTask);
-// router.put('/update-task', updateTasks);
-// router.delete('/delete-task', deleteTasks);
+router.post('/create', verifyToken, createTask);
+router.put('/update', updateTasks);
+router.delete('/delete', deleteTask);
 
 
 module.exports = router; 
