@@ -1,8 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+
 const taskRoutes = require('./routes/taskRoute');
 const userRoutes = require('./routes/userRoute');
+const workspaceRoutes = require('./routes/workspaceRoute');
+
 const connection = require('./config/database');
 const bodyParser = require('body-parser');
 
@@ -16,6 +19,7 @@ app.use(bodyParser.json())
 //route
 app.use('/api/user', userRoutes);
 app.use('/api/task', taskRoutes);
+app.use('/api/workspace', workspaceRoutes)
 
 app.listen(port, hostname, () => {
     console.log(`Example app listening on port ${port}`)

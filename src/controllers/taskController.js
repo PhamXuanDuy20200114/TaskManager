@@ -5,13 +5,12 @@ const jwt = require('jsonwebtoken');
 const {
     getTaskByID,
     getAllTaskByUserID,
-    //addTask
 } = require('../services/taskService');
 
 
 
 let getTaskList = async (req, res) => {
-    let user_id = req.decoded.userId;
+    let user_id = req.decoded.user_id;
     let listTask = await getAllTaskByUserID(user_id);
     return res.status(200).json({
         message: 'ok',
@@ -42,7 +41,7 @@ const updateTasks = async (req, res) => {
 }
 
 const createTask = async (req, res) => {
-    let user_id = req.decoded.userId;
+    let user_id = req.decoded.user_id;
     console.log(req.decoded)
     let { Name, Description, StartTime, EndTime, status } = req.body;
     if (!Name || !StartTime || !EndTime || !status) {
@@ -59,7 +58,7 @@ const createTask = async (req, res) => {
 }
 
 const deleteTask = async (req, res) => {
-    let task_id = req.query.task_id;
+    let task_id = req.params.task_id;
     if (!task_id) {
         return res.status(400).json({
             message: "Not Ok"

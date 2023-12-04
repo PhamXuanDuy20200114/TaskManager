@@ -75,12 +75,11 @@ let login = async (req, res) => {
     const user = existUser[0];
     const checkPassword = await comparePasswords(password, user.password);
     if (checkPassword) {
-        const token = jwt.sign({ userId: user.user_id }, process.env.SECRET_KEY);
-        console.log(token);
-        return res.header('Authorization', `Bearer ${token}`).json({ message: "Login successful!!!" });
+        const token = jwt.sign({ user_id: user.user_id }, process.env.SECRET_KEY);
+        return res.header('Authorization', `Bearer ${token}`).json({ message: "Login successful!!!", data: token });
     }
     return res.status(400).json({
-        message: "Password is incorrect!!!"
+        message: "Password is incorrect!!!",
     })
 
 
