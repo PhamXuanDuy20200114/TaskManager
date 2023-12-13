@@ -9,9 +9,14 @@ const workspaceRoutes = require('./routes/workspaceRoute');
 const connection = require('./config/database');
 const bodyParser = require('body-parser');
 
+const cors = require('cors');
+
 const app = express();
 const port = process.env.PORT || 3333;
 const hostname = process.env.HOST_NAME;
+
+//fix cors error
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
