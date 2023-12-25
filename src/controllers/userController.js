@@ -44,10 +44,8 @@ let createNewUser = async (req, res) => {
         })
     }
 
-    const hashPassword = await hashingPassword(password);
-
     [result, field2] = await connection.query(`INSERT INTO users (name, email, password, phone)
-    VALUES (?,?,?,?)`, [userName, email, hashPassword, phone])
+    VALUES (?,?,?,?)`, [userName, email, password, phone])
 
     return res.status(200).json({
         message: "Register successful!!!"
@@ -73,8 +71,7 @@ let login = async (req, res) => {
         })
     }
     const user = existUser[0];
-    const checkPassword = await comparePasswords(password, user.password);
-    if (checkPassword) {
+    if (password === user.password) {
         const token = jwt.sign({ user_id: user.user_id }, process.env.SECRET_KEY);
         return res.header('Authorization', `Bearer ${token}`).json({ message: "Login successful!!!", data: token });
     }

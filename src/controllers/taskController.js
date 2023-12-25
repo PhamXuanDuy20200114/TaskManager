@@ -42,15 +42,14 @@ const updateTasks = async (req, res) => {
 
 const createTask = async (req, res) => {
     let user_id = req.decoded.user_id;
-    console.log(req.decoded)
-    let { Name, Description, StartTime, EndTime, status } = req.body;
-    if (!Name || !StartTime || !EndTime || !status) {
+    let { Name, Description, StartTime, EndTime, workspace_id } = req.body;
+    if (!Name || !StartTime || !EndTime || !user_id) {
         return res.status(500).json({
             message: "Not OK"
         })
     }
-    let [task, fields] = await connection.query(`INSERT INTO tasks (Name, Description, StartTime, EndTime, status) 
-        VALUES (?,?,?,?,?)`, [Name, Description, StartTime, EndTime, status]);
+    let [task, fields] = await connection.query(`INSERT INTO tasks (Name, Description, StartTime, EndTime, workspace_id, status) 
+        VALUES (?,?,?,?,?,?)`, [Name, Description, StartTime, EndTime, workspace_id, 1]);
     await connection.query(`INSERT INTO user_tasks (user_id, task_id) VALUES (?,?)`, [user_id, task.insertId]);
     return res.status(200).json({
         message: "OK"
@@ -65,7 +64,8 @@ const deleteTask = async (req, res) => {
         })
     }
     await connection.query(`DELETE FROM user_tasks WHERE task_id = ?`, [task_id]);
-    await connection.query(`DELETE FROM tasks WHERE task_id = ?`, [task_id])
+    await connection.query(`DELETE FROM tasks WHERE task_id = ?`, [task_id]);
+
     return res.status(200).json({
         message: "OK"
     })

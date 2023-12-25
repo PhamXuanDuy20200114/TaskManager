@@ -15,12 +15,20 @@ const getTaskByID = async (id) => {
     if (results[0].workspace_id == null) {
         results[0].workspace_name = "Personal";
     } else {
-        let [workspace, fields1] = await connection.query(`SELECT name FROM workspaces WHERE workspace_id = ?`, [workspace_id])
-        results[0].workspace_name = workspace[0];
+        let [workspace, fields1] = await connection.query(`SELECT name FROM workspaces WHERE workspace_id = ?`, [results[0].workspace_id])
+        results[0].workspace_name = workspace[0].name;
     }
-    delete results[0].workspace_id;
+    let [memberId, field2] = await connection.query(`SELECT user_id FROM user_tasks WHERE task_id = ?`, [id]);
+    let listMember = [];
+    for (let i = 0; i < memberId.length; i++) {
+        let [member, field3] = await connection.query(`SELECT * FROM users WHERE user_id = ?`, [memberId[i].user_id]);
+        listMember.push(member);
+    }
+    results[0].member = listMember;
     return results;
 }
+
+
 module.exports = {
     getAllTaskByUserID,
     getTaskByID,

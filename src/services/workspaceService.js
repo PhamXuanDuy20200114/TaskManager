@@ -23,7 +23,9 @@ const addWorkspaceByUserId = async (user_id, name, description) => {
 const addMemberByEmail = async (email, workspace_id) => {
     let [user_id, field2] = await connection.query(`SELECT user_id FROM users WHERE email = ?`, [email]);
     console.log(user_id)
-    await connection.query(`INSERT INTO workspace_user (workspace_id, user_id, role_id) VALUES (?,?,2)`, [workspace_id, user_id[0].user_id]);
+    for (let i = 0; i < user_id.length; i++) {
+        await connection.query(`INSERT INTO workspace_user (workspace_id, user_id, role_id) VALUES (?,?,2)`, [workspace_id, user_id[i].user_id]);
+    }
 }
 
 
